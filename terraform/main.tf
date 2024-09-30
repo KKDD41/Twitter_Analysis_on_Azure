@@ -1,14 +1,10 @@
-resource "random_pet" "rg_name" {
-  prefix = var.resource_group_name_prefix
-}
-
 resource "azurerm_resource_group" "rg" {
   location = var.resource_group_location
-  name     = random_pet.rg_name.id
+  name = "resource-group-twitter-analysis"
 }
 
 resource "azurerm_databricks_workspace" "workspace" {
-  name                = "db-workspace-${random_pet.rg_name.id}"
+  name                = "databricks-workspace-twitter-analysis"
   resource_group_name = azurerm_resource_group.rg.name
   location            = azurerm_resource_group.rg.location
   sku                 = "standard"
@@ -16,4 +12,24 @@ resource "azurerm_databricks_workspace" "workspace" {
   tags = {
     Environment = "Dev"
   }
+}
+
+resource "azurerm_eventhub_namespace" "namespace" {
+  name                = "eventhub-namespace-twitter-analysis"
+  location            = azurerm_resource_group.rg.location
+  resource_group_name = azurerm_resource_group.rg.name
+  sku                 = "Standard"
+  capacity            = 1
+
+  tags = {
+    environment = "Dev"
+  }
+}
+
+resource "azurerm_eventhub" "eventhub" {
+  name                = "eventhub-twitter-analysis"
+  namespace_name      = azurerm_eventhub_namespace.namespace.name
+  resource_group_name = azurerm_resource_group.rg.name
+  partition_count     = 2
+  message_retention   = 1
 }
