@@ -1,5 +1,4 @@
 import asyncio
-import copy
 import os
 import json
 from dotenv import load_dotenv
@@ -13,14 +12,10 @@ load_dotenv("../.env")
 # LOADING EVENT HUB CONNECTION DATA
 EVENT_HUB_CONNECTION_STR = os.getenv("EVENT_HUB_CONNECTION_STR")
 EVENT_HUB_NAME = os.getenv("EVENT_HUB_NAME")
+print(EVENT_HUB_CONNECTION_STR)
+print(EVENT_HUB_NAME)
 
 # LOADING TWITTER TOKEN
-TWITTER_API_KEY = os.getenv("TWITTER_API_KEY")
-TWITTER_API_KEY_SECRET = os.getenv("TWITTER_API_KEY_SECRET")
-
-TWITTER_ACCESS_TOKEN = os.getenv("TWITTER_ACCESS_TOKEN")
-TWITTER_ACCESS_TOKEN_SECRET = os.getenv("TWITTER_ACCESS_TOKEN_SECRET")
-
 TWITTER_BEARER_TOKEN = os.getenv("TWITTER_BEARER_TOKEN")
 
 # MESSAGES BACKUP
@@ -76,11 +71,10 @@ async def run():
     async with producer:
         event_data_batch = await producer.create_batch()
 
-        tweets = generate_dummy_tweets(max_results=10)
+        tweets = generate_dummy_tweets(max_results=100)
         for message in tweets:
             event_data_batch.add(EventData(message))
 
         await producer.send_batch(event_data_batch)
-
 
 asyncio.run(run())

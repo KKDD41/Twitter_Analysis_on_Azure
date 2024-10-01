@@ -132,8 +132,8 @@ cython_debug/
 # PyCharm
 .idea/
 
-/terraform/.*
-/terraform/*plan
-/terraform/*state
-/terraform/*backup
+/infrastructure/.*
+/infrastructure/*plan
+/infrastructure/*state
+/infrastructure/*backup
 /data
