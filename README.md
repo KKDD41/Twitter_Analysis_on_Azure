@@ -20,6 +20,4 @@ terraform apply main.destroy.tfplan
 
 Databricks workspace configuration:
 1. Create compute resource Databricks general-purpose cluster: `Standard_D3_v2`, runtime: `15.4 LTS`.
-2. Панки юзают коннектор Kafka.
-3. https://medium.com/@kaviprakash.2007/structured-streaming-using-azure-databricks-and-event-hub-6b0bcbf029c4.
-4. Евенты крутятся -- стрим мутится.
+2. 
