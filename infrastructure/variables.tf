@@ -1,5 +1,5 @@
 variable "resource_group_location" {
   type        = string
-  default     = "israelcentral"
+  default     = "australiacentral"
   description = "Location of the resource group."
 }
