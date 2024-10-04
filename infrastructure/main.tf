@@ -33,3 +33,17 @@ resource "azurerm_eventhub" "eventhub" {
   partition_count     = 2
   message_retention   = 1
 }
+
+resource "azurerm_mssql_server" "sqlserver" {
+  name                         = "sqlserver-twitter-analysis"
+  resource_group_name          = azurerm_resource_group.rg.name
+  location                     = azurerm_resource_group.rg.location
+  administrator_login          = "user007"
+  administrator_login_password = "RandomPassword10503040"
+  version                      = "12.0"
+}
+
+resource "azurerm_mssql_database" "db" {
+  name      = "db-twitter-analysis"
+  server_id = azurerm_mssql_server.sqlserver.id
+}

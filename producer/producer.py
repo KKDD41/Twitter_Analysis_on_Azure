@@ -1,5 +1,5 @@
 import asyncio
-import copy
+import json
 import pandas as pd
 import os
 import random
@@ -50,14 +50,19 @@ def generate_original_tweets(max_results: int = 10):
     for message in tweets.data:
         message_json = message._json
         save_message_backup(message_json)
-        result.append(message_json)
+        result.append(json.dumps(message_json))
 
     return result
 
 
 def generate_dummy_tweets(max_results: int = 10):
     start_row = random.randint(0, len(DUMMY_DATA) - max_results - 1)
-    return DUMMY_DATA.iloc[start_row: start_row + max_results]
+    messages_df = DUMMY_DATA.iloc[start_row: start_row + max_results]
+
+    result = []
+    for index, row in messages_df.iterrows():
+        result.append(json.dumps(row.to_json()))
+    return result
 
 
 async def run():
