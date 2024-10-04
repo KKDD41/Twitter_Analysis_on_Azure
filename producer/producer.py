@@ -80,4 +80,6 @@ async def run():
         await producer.send_batch(event_data_batch)
 
 
-asyncio.run(run())
+if __name__ == "__main__":
+    while True:
+        asyncio.run(run())
