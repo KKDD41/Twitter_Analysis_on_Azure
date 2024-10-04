@@ -136,4 +136,3 @@ cython_debug/
 /terraform/*plan
 /terraform/*state
 /terraform/*backup
-/data

@@ -1,7 +1,8 @@
 import asyncio
 import copy
+import pandas as pd
 import os
-import json
+import random
 from dotenv import load_dotenv
 import tweepy as tw
 import jsonlines
@@ -25,6 +26,7 @@ TWITTER_BEARER_TOKEN = os.getenv("TWITTER_BEARER_TOKEN")
 
 # MESSAGES BACKUP
 TWEETS_FILE_PATH = "../data/messages_backup.json"
+DUMMY_DATA = pd.read_csv("../data/elonmusk_tweets.csv")
 
 
 def save_message_backup(message_json):
@@ -40,7 +42,7 @@ def generate_original_tweets(max_results: int = 10):
     query = '#elonmusk -is:retweet lang:en'
     tweets = tw_client.search_recent_tweets(
         query=query,
-        tweet_fields=['context_annotations', 'created_at'],
+        tweet_fields=['id_str', 'created_at', 'text'],
         max_results=max_results
     )
     result = []
@@ -54,18 +56,8 @@ def generate_original_tweets(max_results: int = 10):
 
 
 def generate_dummy_tweets(max_results: int = 10):
-    tweet_structure = {}
-
-    with open("response_example.json", "r") as f:
-        tweet_structure = json.loads(f.read())
-
-    result = []
-    for i in range(max_results):
-        tweet_structure[
-            "text"] = f"Congratulations! You received {i}-th dummy tweet from dummy producers, and did not spend a cent on X API!"
-        result.append(json.dumps(tweet_structure))
-
-    return result
+    start_row = random.randint(0, len(DUMMY_DATA) - max_results - 1)
+    return DUMMY_DATA.iloc[start_row: start_row + max_results]
 
 
 async def run():
