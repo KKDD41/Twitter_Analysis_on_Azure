@@ -6,14 +6,14 @@ variable "resource_group_location" {
 
 variable "admin_user_name" {
   type        = string
-  default     = "user007"
+  default     = "<your-sample-name>"
   description = "Admin username for Azure SQL Database."
 }
 
 variable "admin_user_password" {
   type        = string
   sensitive   = true
-  default     = "RandomPassword10503040"
+  default     = "<your-sample-password>"
   description = "Temporary admin password for Azure SQL Database."
 }
 
