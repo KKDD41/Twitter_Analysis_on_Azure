@@ -89,7 +89,7 @@ resource "databricks_secret" "sqldb-password" {
   scope        = databricks_secret_scope.sqldb-scope.id
 }
 
-resource "databricks_cluster" "shared_autoscaling" {
+resource "databricks_cluster" "cluster" {
   cluster_name  = "azure-twitter-analysis-cluster"
   spark_version = "15.4.x-scala2.12"
   spark_conf = {
@@ -110,4 +110,22 @@ resource "databricks_cluster" "shared_autoscaling" {
   runtime_engine          = "PHOTON"
   num_workers             = 1
   depends_on = [azurerm_databricks_workspace.workspace]
+}
+
+resource "databricks_notebook" "notebook" {
+  path     = "./etl-twitter-analysis.py"
+  language = "PYTHON"
+  source   = "../../analytics/etl-twitter-analysis.py"
+}
+
+resource "databricks_job" "this" {
+  name = "etl-twitter-analysis"
+
+  task {
+    task_key = "1"
+    existing_cluster_id = databricks_cluster.cluster.id
+    notebook_task {
+      notebook_path = databricks_notebook.notebook.path
+    }
+  }
 }

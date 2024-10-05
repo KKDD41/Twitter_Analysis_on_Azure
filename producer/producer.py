@@ -5,7 +5,6 @@ import os
 import random
 from dotenv import load_dotenv
 import tweepy as tw
-import jsonlines
 from azure.eventhub import EventData
 from azure.eventhub.aio import EventHubProducerClient
 
@@ -29,11 +28,6 @@ TWEETS_FILE_PATH = "../data/messages_backup.json"
 DUMMY_DATA = pd.read_csv("../data/elonmusk_tweets.csv")
 
 
-def save_message_backup(message_json):
-    with jsonlines.open(TWEETS_FILE_PATH, 'a') as json_writer:
-        json_writer.write(message_json)
-
-
 def generate_original_tweets(max_results: int = 10):
     tw_client = tw.Client(
         bearer_token=TWITTER_BEARER_TOKEN
@@ -49,7 +43,6 @@ def generate_original_tweets(max_results: int = 10):
 
     for message in tweets.data:
         message_json = message._json
-        save_message_backup(message_json)
         result.append(json.dumps(message_json))
 
     return result
