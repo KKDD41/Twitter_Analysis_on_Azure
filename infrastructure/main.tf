@@ -61,8 +61,53 @@ resource "azurerm_mssql_firewall_rule" "firewall" {
   server_id        = azurerm_mssql_server.sqlserver.id
   start_ip_address = "0.0.0.0"
   end_ip_address   = "0.0.0.0"
+}
 
-  tags = {
-    Environment = var.environment_tag
+resource "databricks_secret_scope" "eventhub-scope" {
+  name = "eventhub-scope"
+}
+
+resource "databricks_secret_scope" "sqldb-scope" {
+  name = "sqldb-scope"
+}
+
+resource "databricks_secret" "eventhub-conn-str" {
+  key          = "eventhub-conn-str"
+  string_value = azurerm_eventhub_namespace.namespace.default_primary_connection_string
+  scope        = databricks_secret_scope.eventhub-scope.id
+}
+
+resource "databricks_secret" "sqldb-username" {
+  key          = "sqldb-username"
+  string_value = var.admin_user_name
+  scope        = databricks_secret_scope.sqldb-scope.id
+}
+
+resource "databricks_secret" "sqldb-password" {
+  key          = "sqldb-password"
+  string_value = var.admin_user_password
+  scope        = databricks_secret_scope.sqldb-scope.id
+}
+
+resource "databricks_cluster" "shared_autoscaling" {
+  cluster_name  = "azure-twitter-analysis-cluster"
+  spark_version = "15.4.x-scala2.12"
+  spark_conf = {
+    "spark.master"                     = "local[*, 4]"
+    "spark.databricks.cluster.profile" = "singleNode"
+    "eventhub-conn-str"                = azurerm_eventhub_namespace.namespace.default_primary_connection_string
+    "sqldb-username"                   = var.admin_user_name
+    "sqldb-password"                   = var.admin_user_password
   }
+  node_type_id        = "Standard_D3_v2"
+  driver_node_type_id = "Standard_D3_v2"
+  spark_env_vars = {
+    PYSPARK_PYTHON = "/databricks/python3/bin/python3"
+  }
+  autotermination_minutes = 120
+  enable_elastic_disk     = true
+  data_security_mode      = "LEGACY_SINGLE_USER_STANDARD"
+  runtime_engine          = "PHOTON"
+  num_workers             = 1
+  depends_on = [azurerm_databricks_workspace.workspace]
 }
