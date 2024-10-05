@@ -1,7 +1,9 @@
 CREATE TABLE tweets (
 	id text,
 	created_at text,
-	"text" text
+	"text" text,
+	week_day int,
+	text_length int
 )
 
 CREATE TABLE mentions (
@@ -16,5 +18,6 @@ CREATE TABLE total_mentions (
 
 CREATE TABLE tweets_by_date (
     "date" date,
-    "count" int
+    "count" int,
+    total_tweets_length int
 )
